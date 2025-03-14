@@ -1,0 +1,203 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+    color: white;
+    background: radial-gradient(circle, rgba(0, 0, 50, 1) 0%, rgba(0, 0, 0, 1) 70%);
+    background-size: 400% 400%;
+    animation: rotateBackground 30s infinite linear;
+    position: relative;
+}
+
+body::before {
+    content: ''; 
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0, 0, 50, 1) 0%, rgba(0, 0, 0, 1) 70%);
+    background-size: 400% 400%;
+    animation: rotateBackground 30s infinite linear;
+    z-index: -1;
+}
+
+@keyframes rotateBackground {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+h1 {
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.search-container {
+    margin: 20px;
+}
+
+.search-container input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    width: 100px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.search-container button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.rocket-container {
+    position: fixed;
+    bottom: -200px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 10;
+    animation: launch 3s ease-in forwards;
+    pointer-events: none;
+    z-index: 20;
+    position: fixed;
+}
+
+.rocket {
+    width: 150px;
+}
+
+@keyframes launch {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-120vh);
+    }
+}
+
+.gallery-container {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+body.ready .gallery-container {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.flight-deck {
+    padding: 15px;
+    border: 4px solid rgba(0, 255, 255, 0.4);
+    border-radius: 16px;
+    background: rgba(0, 0, 20, 0.8);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 30px rgba(0, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.flight-deck img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.flight-deck h3 {
+    margin: 10px 0 5px;
+    color: #00ffff;
+}
+
+.flight-deck p {
+    display: none;
+}
+
+.flight-deck.active p {
+    display: block;
+}
+
+.flight-deck.active {
+    grid-column: span 3;
+}
+
+.pagination {
+    text-align: center;
+    margin: 20px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+body.ready .pagination {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    margin: 0 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #badbff;
+    color: #007bff;
+    cursor: no-drop;
+}
+
+.hidden {
+    display: none;
+}
+
+body.ready .gallery-container,
+body.ready .pagination,
+body.ready h1 {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+#content {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+body.ready #content {
+    opacity: 1;
+    transform: scale(1);
+}
