@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./assets/img/logo-nasa.png" type="image/x-icon">
+    <link rel="stylesheet" href="./assets/css/card.css">
+    <title>Detalhes do Registro</title>
+</head>
+
+<body>
+    <div id="card-container">
+        <h1 id="card-title"></h1>
+        <img id="card-image" alt="Imagem do Card">
+        <p id="card-description"></p>
+    </div>
+
+    <div class="pagination">
+        <button id="prevBtn" onclick="navigate('prev')">Anterior</button>
+        <button id="nextBtn" onclick="navigate('next')">Próximo</button>
+    </div>
+
+    <script>
+        let allItems = [];
+        let currentIndex = 0;
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        const fetchNasaImages = async (year = 2025) => {
+            const url = `https://images-api.nasa.gov/search?q=earth&media_type=image&year_start=${year}&year_end=${year}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                allItems = data.collection.items;
+                loadCard();
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+            }
+        };
+
+        function loadCard() {
+            const index = parseInt(getQueryParam('index'), 10);
+            currentIndex = index;
+            const item = allItems[currentIndex];
+
+            const title = item.data[0].title;
+            const description = item.data[0].description || "Sem descrição.";
+            const image = (item.links && item.links[0] && item.links[0].href) || '';
+
+            document.getElementById('card-title').textContent = title;
+            document.getElementById('card-description').textContent = description;
+            document.getElementById('card-image').src = image;
+
+            setupPagination();
+        }
+
+        function setupPagination() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === allItems.length - 1;
+        }
+
+        function navigate(direction) {
+            if (direction === 'prev' && currentIndex > 0) {
+                currentIndex--;
+            } else if (direction === 'next' && currentIndex < allItems.length - 1) {
+                currentIndex++;
+            }
+
+            const url = `card.html?index=${currentIndex}`;
+            window.location.href = url;
+        }
+
+        window.addEventListener('load', () => {
+            fetchNasaImages();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/index.css">
+    <link rel="icon" href="./assets/img/logo-nasa.png" type="image/x-icon">
+    <title>NASA Gallery</title>
+</head>
+<body>
+    <div class="rocket-container" id="rocket">
+        <img src="./assets/img/foguete.png" alt="Foguete" class="rocket">
+    </div>
+
+    <div class="content hidden" id="content">
+        <h1>Galeria de Imagens da NASA</h1>
+        <h2>Descubra as fotos tiradas pela NASA no ano do seu aniversário!</h2>
+        <div class="search-container">
+            <input type="number" id="yearInput" placeholder="Ano" min="1995" max="2025">
+            <button onclick="searchByYear()">Buscar</button>
+        </div>
+
+        <div class="gallery-container" id="gallery"></div>
+
+        <div class="pagination" id="pagination">
+            <button id="prevBtn" onclick="changePage('prev')" disabled>Anterior</button>
+            <button id="nextBtn" onclick="changePage('next')" disabled>Próximo</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const itemsPerPage = 6;
+        let allItems = [];
+        let selectedYear = 2025;
+
+        const fetchNasaImages = async (year = 2025) => {
+            const url = `https://images-api.nasa.gov/search?q=earth&media_type=image&year_start=${year}&year_end=${year}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                allItems = data.collection.items;
+                setupPagination();
+                changePage(1);
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+            }
+        };
+
+        function searchByYear() {
+            const yearInput = document.getElementById('yearInput').value;
+            if (yearInput && yearInput >= 1995 && yearInput <= 2025) {
+                selectedYear = yearInput;
+                fetchNasaImages(selectedYear);
+            } else {
+                alert('Por favor, insira um ano válido entre 1995 e 2025.');
+            }
+        }
+
+        function renderGallery(items) {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.classList.add('flight-deck');
+                const title = item.data[0].title;
+                const description = item.data[0].description || "Sem descrição.";
+                const image = (item.links && item.links[0] && item.links[0].href) || '';
+
+                card.innerHTML = `<img src="${image}" alt="${title}"><h3>${title}</h3><p>${description}</p>`;
+                
+                const cardIndex = (currentPage - 1) * itemsPerPage + index;
+
+                card.addEventListener('click', () => {
+                    const url = `card.html?index=${cardIndex}`;
+                    window.location.href = url;
+                });
+
+                gallery.appendChild(card);
+            });
+        }
+
+        function setupPagination() {
+            const totalPages = Math.ceil(allItems.length / itemsPerPage);
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(allItems.length / itemsPerPage);
+
+            if (direction === 'prev' && currentPage > 1) {
+                currentPage--;
+            } else if (direction === 'next' && currentPage < totalPages) {
+                currentPage++;
+            }
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            renderGallery(allItems.slice(start, end));
+            setupPagination();
+        }
+
+        window.addEventListener('load', () => {
+            const indexParam = new URLSearchParams(window.location.search).get('index');
+            if (indexParam !== null) {
+                const index = parseInt(indexParam, 10);
+                const item = allItems[index];
+                
+                const gallery = document.getElementById('gallery');
+                const card = document.createElement('div');
+                card.classList.add('flight-deck');
+                const title = item.data[0].title;
+                const description = item.data[0].description || "Sem descrição.";
+                const image = (item.links && item.links[0] && item.links[0].href) || '';
+
+                card.innerHTML = `<img src="${image}" alt="${title}"><h3>${title}</h3><p>${description}</p>`;
+                gallery.appendChild(card);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('rocket').style.display = 'none';
+                    document.body.classList.add('ready');
+                    document.getElementById('content').classList.remove('hidden');
+                    fetchNasaImages();
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
