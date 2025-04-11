@@ -41,7 +41,7 @@ Quando o usuário insere um ano, fazemos uma requisição à API utilizando o en
 
 ```javascript
 const response = await fetch(`https://images-api.nasa.gov/search?q=&year_start=${year}&year_end=${year}&media_type=image&page_size=100`);
-
+````
 
 ### Discente: Rayssa Gomides Marconato
 ### RA: 2001130
